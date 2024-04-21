@@ -245,6 +245,11 @@ class DatasetTemplate(torch_data.Dataset):
                 elif key in ['gt_boxes']:
                     max_gt = max([len(x) for x in val])
                     batch_gt_boxes3d = np.zeros((batch_size, max_gt, val[0].shape[-1]), dtype=np.float32)
+                    if len(val) < batch_size:
+                        print('============')
+                        print(len(val))
+                        print(data_dict)
+
                     for k in range(batch_size):
                         batch_gt_boxes3d[k, :val[k].__len__(), :] = val[k]
                     ret[key] = batch_gt_boxes3d

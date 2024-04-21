@@ -73,10 +73,8 @@ def eval_one_epoch(cfg, args, model, dataloader, epoch_id, logger, dist_test=Fal
             disp_dict['infer_time'] = f'{infer_time_meter.val:.2f}({infer_time_meter.avg:.2f})'
 
         statistics_info(cfg, ret_dict, metric, disp_dict)
-        annos = dataset.generate_prediction_dicts(
-            batch_dict, pred_dicts, class_names,
-            output_path=final_output_dir if args.save_to_file else None
-        )
+        annos = dataset.generate_prediction_dicts(batch_dict, pred_dicts, class_names, 
+                                                  output_path = final_output_dir if args.save_to_file else None)
         det_annos += annos
         if cfg.LOCAL_RANK == 0:
             progress_bar.set_postfix(disp_dict)

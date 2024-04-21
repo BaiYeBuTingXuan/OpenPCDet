@@ -1,0 +1,13 @@
+Train with single GPU
+python train.py --cfg_file ${CONFIG_FILE}
+python train.py --cfg_file /home/wanghejun/Desktop/wanghejun/WeatherShift/main/OpenPCDet/tools/
+python train.py --cfg_file cfgs/weathershift_models/pv_rcnn.yaml --batch_size 1 --workers 1 --epochs 10
+CUDA_VISIBLE_DEVICES=3 python train.py --cfg_file cfgs/weathershift_models/pv_rcnn.yaml
+CUDA_VISIBLE_DEVICES=1,2, 3 python -m torch.distributed.launch --nproc_per_node=4 train.py --cfg_file cfgs/kitti_models/pv_rcnn.yaml --launcher pytorch
+CUDA_VISIBLE_DEVICES=3 python train.py --cfg_file cfgs/weathershift_models/pv_rcnn.yaml --batch_size 1 --workers 1 --epochs 10
+CUDA_VISIBLE_DEVICES=3 python train.py --cfg_file cfgs/weathershift_models/pv_rcnn.yaml --extra_tag='foggy_in_real'
+
+
+
+CUDA_VISIBLE_DEVICES=4,5,6,7 python -m torch.distributed.launch --nproc_per_node=4 test.py --cfg_file cfgs/kitti_models/pv_rcnn.yaml --launcher pytorch --batch_size 4 --eval_all
+

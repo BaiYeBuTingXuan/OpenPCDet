@@ -1,31 +1,18 @@
+import os
+import sys
+from os.path import join, dirname
+import sys
+sys.path.insert(0, '/home/wanghejun/Desktop/wanghejun/WeatherShift/main')
+sys.path.insert(0, join(dirname(__file__), '..'))
+sys.path.insert(0, join(dirname(__file__), '...'))
+sys.path.insert(0, join(dirname(__file__), '....'))
+
 import torch
 from functools import partial
 from torch.utils.data import DataLoader
 from torch.utils.data import DistributedSampler as _DistributedSampler
 
-from pcdet.utils import common_utils
-
-from .dataset import DatasetTemplate
-from .kitti.kitti_dataset import KittiDataset
-from .nuscenes.nuscenes_dataset import NuScenesDataset
-from .waymo.waymo_dataset import WaymoDataset
-from .pandaset.pandaset_dataset import PandasetDataset
-from .lyft.lyft_dataset import LyftDataset
-from .once.once_dataset import ONCEDataset
-from .argo2.argo2_dataset import Argo2Dataset
-from .custom.custom_dataset import CustomDataset
-
-__all__ = {
-    'DatasetTemplate': DatasetTemplate,
-    'KittiDataset': KittiDataset,
-    'NuScenesDataset': NuScenesDataset,
-    'WaymoDataset': WaymoDataset,
-    'PandasetDataset': PandasetDataset,
-    'LyftDataset': LyftDataset,
-    'ONCEDataset': ONCEDataset,
-    'CustomDataset': CustomDataset,
-    'Argo2Dataset': Argo2Dataset
-}
+from ..utils import common_utils
 
 
 class DistributedSampler(_DistributedSampler):
@@ -53,6 +40,31 @@ class DistributedSampler(_DistributedSampler):
 
 def build_dataloader(dataset_cfg, class_names, batch_size, dist, root_path=None, workers=4, seed=None,
                      logger=None, training=True, merge_all_iters_to_one_epoch=False, total_epochs=0):
+
+    if dataset_cfg.DATASET is not None:
+        from .dataset import DatasetTemplate
+        from .kitti.kitti_dataset import KittiDataset
+        from .nuscenes.nuscenes_dataset import NuScenesDataset
+        from .waymo.waymo_dataset import WaymoDataset
+        from .pandaset.pandaset_dataset import PandasetDataset
+        from .lyft.lyft_dataset import LyftDataset
+        from .once.once_dataset import ONCEDataset
+        from .argo2.argo2_dataset import Argo2Dataset
+        from .custom.custom_dataset import CustomDataset
+        from .weathershift.weathershift_dataset import WeatherShiftDataset
+
+        __all__ = {
+            'DatasetTemplate': DatasetTemplate,
+            'KittiDataset': KittiDataset,
+            'NuScenesDataset': NuScenesDataset,
+            'WaymoDataset': WaymoDataset,
+            'PandasetDataset': PandasetDataset,
+            'LyftDataset': LyftDataset,
+            'ONCEDataset': ONCEDataset,
+            'CustomDataset': CustomDataset,
+            'Argo2Dataset': Argo2Dataset,
+            'WeatherShiftDataset': WeatherShiftDataset
+        }
 
     dataset = __all__[dataset_cfg.DATASET](
         dataset_cfg=dataset_cfg,

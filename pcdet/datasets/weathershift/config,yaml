@@ -1,0 +1,20 @@
+# YAML 示例文件
+
+DATA_PATH: /home/wanghejun/Desktop/wanghejun/WeatherShift/main/data/Dense/SeeingThroughFog
+CLASS:
+   - Pedestrian
+   - Obstacle
+   - PassengerCar
+   - Pedestrian_is_group
+   - DontCare
+   - Vehicle
+   - LargeVehicle
+   - PassengerCar_is_group
+   - RidableVehicle
+   - person
+   - Vehicle_is_group
+
+weather: dense_fog_day
+lidar: lidar_hdl64_strongest
+ratio_real_fake: 0.1
+
