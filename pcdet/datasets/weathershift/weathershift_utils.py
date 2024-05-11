@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 import numpy as np
 from pathlib import Path
 import io as sysio
+=======
+>>>>>>> 8fb0614e0e3db4c6c951b0f055d4cfe9cbb8f633
 def read_label(path2label):
     # [name, cx, cy, cz, dx, dy, dz, heading]
     objects_list = []
@@ -28,6 +31,7 @@ def read_label(path2label):
 
             objects_list.append(obj)
             
+<<<<<<< HEAD
     return objects_list
 
 def load_data(path2spilit, root, lidar, weather, fake, real=True):
@@ -143,3 +147,6 @@ def arrange_weathershift_data(path2dataset, save_path, weather, lidar, spilit = 
 
 
     
+=======
+    return objects_list
+>>>>>>> 8fb0614e0e3db4c6c951b0f055d4cfe9cbb8f633

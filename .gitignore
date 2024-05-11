@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 **__pycache__**
 **build**
 **egg-info**
@@ -16,3 +17,23 @@ venv/
 output
 version.py
 */history/
+=======
+**__pycache__**
+**build**
+**egg-info**
+**dist**
+data/
+*.pyc
+venv/
+*.idea/
+*.so
+*.yaml
+*.sh
+*.pth
+*.pkl
+*.zip
+*.bin
+output
+version.py
+*/.history/
+>>>>>>> 8fb0614e0e3db4c6c951b0f055d4cfe9cbb8f633
