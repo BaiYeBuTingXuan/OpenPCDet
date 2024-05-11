@@ -146,6 +146,9 @@ class VoxelBackBone8x(nn.Module):
             batch_size=batch_size
         )
 
+        # print('===')
+        # print(input_sp_tensor)
+
         x = self.conv_input(input_sp_tensor)
 
         x_conv1 = self.conv1(x)

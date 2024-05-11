@@ -51,8 +51,11 @@ class WeatherShiftDataset(DatasetTemplate):
             self.dataset_cfg.DATA_PROCESSOR, point_cloud_range=self.point_cloud_range,
             training=self.training, num_point_features=self.point_feature_encoder.num_point_features
         )
-
-        self.include_weathershift_data(self.mode)
+        self.trainning_mode()
+        if self.load_all:
+            self.include_weathershift_data('origin')
+        else:
+            self.include_weathershift_data(self.mode)
 
         self.grid_size = self.data_processor.grid_size
 
@@ -73,13 +76,19 @@ class WeatherShiftDataset(DatasetTemplate):
         self.add_to_logger('Loading Real Data of %s' % (self.weather))
         
         path2spilit = self.root_path.joinpath('splits').joinpath(mode).joinpath(self.weather+'.txt')
+
+        self.add_to_logger('From file %s' % (str(path2spilit)))
         self.real_file_list = load_data(path2spilit, root=self.root_path, lidar=self.lidar, fake=self.fake, weather=self.weather, real=True)
+
 
         self.add_to_logger('Real samples for WeatherShift dataset of %s %s: %d' % (self.weather, self.lidar, len(self.real_file_list)))
 
         self.add_to_logger('Loading Fake Data of %s' % (self.weather))
         
         path2spilit = self.root_path.joinpath('splits').joinpath(mode).joinpath('clear_day'+'.txt')
+
+        self.add_to_logger('From file %s' % (str(path2spilit)))
+
         self.fake_file_list = load_data(path2spilit, root=self.root_path, lidar=self.lidar,fake=self.fake, weather=self.weather, real=False)
 
         self.add_to_logger('Fake samples for WeatherShift dataset of %s %s: %d' % (self.weather, self.lidar, len(self.fake_file_list)))
@@ -88,11 +97,14 @@ class WeatherShiftDataset(DatasetTemplate):
 
         self.class_names = self.dataset_cfg['CLASS']
         self.add_to_logger('There exist(s) %d categories' % (len(self.class_names)))
-
     
     @property
     def weather(self):
         return self.dataset_cfg['weather']
+    
+    @property
+    def load_all(self):
+        return (self.dataset_cfg['is_load_all'])
     
     @property
     def lidar(self):
@@ -108,7 +120,7 @@ class WeatherShiftDataset(DatasetTemplate):
         if self.training:
             return self.dataset_cfg['real_in_all']
         else:
-            return 1
+            return 1.1
         
         
     @property
@@ -119,26 +131,61 @@ class WeatherShiftDataset(DatasetTemplate):
     def fake(self):
         return self.dataset_cfg['fake']
     
+    @property
+    def train_on_clear(self):
+        return self.dataset_cfg['train_on_clear']
+    
+    def trainning_mode(self):
+        self.add_to_logger('trainning with:'+self.dataset_cfg['trainning'])
+        if self.dataset_cfg['trainning'] == 'gen':
+            self.dataset_cfg['train_on_clear'] = False
+            self.dataset_cfg['fake'] = 'generated'
+            self.dataset_cfg['real_in_all'] = 0
+            self.dataset_cfg['is_load_all'] = True
+        elif  self.dataset_cfg['trainning'] == 'sim':
+            self.dataset_cfg['train_on_clear'] = False
+            self.dataset_cfg['fake'] = 'simulated'
+            self.dataset_cfg['real_in_all'] = 0
+            self.dataset_cfg['is_load_all'] = True
+        elif  self.dataset_cfg['trainning'] == 'clear':
+            self.dataset_cfg['train_on_clear'] = True
+            self.dataset_cfg['fake'] = 'x'
+            self.dataset_cfg['real_in_all'] = 0
+            self.dataset_cfg['is_load_all'] = True
+        elif  self.dataset_cfg['trainning'] == 'real':
+            self.dataset_cfg['train_on_clear'] = False
+            self.dataset_cfg['fake'] = 'x'
+            self.dataset_cfg['real_in_all'] = 1.0
+            self.dataset_cfg['is_load_all'] = False
+        for key in self.dataset_cfg.keys():
+            self.add_to_logger('key:%s,value:%s'%(key,self.dataset_cfg[key]))
+        pass
+    
     def add_to_logger(self, line):
         if self.logger is not None:
             self.logger.info(line)
 
     def __getitem__(self, index):
-        fake_or_real = random.random() > self.real_in_all
-        # fake_or_real = False
-
-        if fake_or_real: # fake
-            file_list = self.fake_file_list
-        else: # real
-            file_list = self.real_file_list
-
-        index = index % len(file_list)
-        filename = file_list[index]
-
-        if fake_or_real: # fake
-            path2pointcloud = self.root_path.joinpath(self.fake).joinpath(self.weather).joinpath(self.lidar).joinpath(filename+'.bin')
-        else: # real
+        if self.train_on_clear and self.training:
+            filename = self.fake_file_list[index % len(self.fake_file_list)]
             path2pointcloud = self.root_path.joinpath('cloud').joinpath(self.lidar).joinpath(filename+'.bin')
+
+        else: # Testing or train on not clear data
+            fake_or_real = random.random() > self.real_in_all
+            # fake_or_real = False
+
+            if fake_or_real: # fake
+                file_list = self.fake_file_list
+            else: # real
+                file_list = self.real_file_list
+
+            filename = file_list[index % len(file_list)]
+
+            if fake_or_real: # fake
+                path2pointcloud = self.root_path.joinpath(self.fake).joinpath(self.weather).joinpath(self.lidar).joinpath(filename+'.bin')
+            else: # real 
+                path2pointcloud = self.root_path.joinpath('cloud').joinpath(self.lidar).joinpath(filename+'.bin')
+            # print(path2pointcloud)
         
         points = read_pcd(path2pointcloud) ## The Structure of the points
 
@@ -165,6 +212,9 @@ class WeatherShiftDataset(DatasetTemplate):
                 'frame_id': filename
             }
         data_dict = self.prepare_data(data_dict=input_dict)
+        
+        
+
         # print(data_dict['frame_id'])
         # print(len(data_dict['points']))
 

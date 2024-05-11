@@ -165,6 +165,10 @@ class PointResidualCoder(object):
         xa, ya, za = torch.split(points, 1, dim=-1)
 
         if self.use_mean_size:
+            print('xxx')
+            print(self.mean_size.shape[0])
+            print(gt_classes)
+
             assert gt_classes.max() <= self.mean_size.shape[0]
             point_anchor_size = self.mean_size[gt_classes - 1]
             dxa, dya, dza = torch.split(point_anchor_size, 1, dim=-1)

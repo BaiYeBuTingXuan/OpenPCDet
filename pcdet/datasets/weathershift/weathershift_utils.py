@@ -44,8 +44,8 @@ def load_data(path2spilit, root, lidar, weather, fake, real=True):
             filename = l.strip().replace(',','_')
             path2pointcloud = root_pc.joinpath(filename+'.bin')
             path2label = root_label.joinpath(filename+'.txt')
-            if path2pointcloud.exists() and path2label.exists():
-                file_list.append(filename)
+            # if path2pointcloud.exists() and path2label.exists():
+            file_list.append(filename)
     file_list.sort()
 
     return file_list

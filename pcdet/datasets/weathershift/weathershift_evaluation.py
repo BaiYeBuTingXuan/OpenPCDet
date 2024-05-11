@@ -19,9 +19,9 @@ name_to_class = {v: n for n, v in class_to_name.items()}
 NUM_OF_CLASSES = 11
 
 Challenges = {
-    'Easy': 0.1,
-    'Moderate': 0.3,
-    'Hard':0.5
+    'Easy': 0.3,
+    'Moderate': 0.5,
+    'Hard':0.8
 }
 
 class Box():
@@ -188,7 +188,7 @@ def get_official_eval_result(annos, current_classes, PR_detail_dict=None):
     result=''
     ret_dict = {}
     for c in Challenges.keys():
-        mAP[c] = np.sum(ap[c]*nums[c] / (nums[c]+1e-6))
+        mAP[c] = np.sum(ap[c]*nums[c]) / (np.sum(nums[c])+1e-6)
         result += f'===== {c} ===== \n'
         result += f'mAP={mAP[c]:.4f}\n'
         ret_dict[f'%s/mAP' % (c)] = mAP[c]
